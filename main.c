@@ -32,8 +32,6 @@ int main() {
 		// Feetech
 		STS_Uart_Half_Duplex_Loop();
 		STS_Loop();
-		Init_STS_Actions_Loop();
-		STS_Actions_Loop();
 		STS_Search_ID_Loop();
 	}
 }

@@ -27,7 +27,7 @@ uint8_t Reboot_USB_Func(void) {
 }
 
 uint8_t Print_Version_Func(void) {
-    printf("version,Formation_RP2040\n");
+    printf("version,walker\n");
     printf("Compiled_on,");
     printf(__DATE__);
     printf(" @ ");

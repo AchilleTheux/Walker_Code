@@ -10,18 +10,15 @@ u16 i_Lecture_Current_Cmd = 0;
 const Command Command_List[] = {
 
 
-    // Feetech bus on the former AX half-duplex pins.
-    { "BAUD", STS_Uart_Half_Duplex_Set_Freq_Func},
-    { "STSBAUD", STS_Uart_Half_Duplex_Set_Freq_Func},
-    { "AXBAUD", STS_Uart_Half_Duplex_Set_Freq_Func},
-    { "WR", Send_STS_Func},
-    { "RD", Get_STS_Func},
-    { "STSTESTID",Test_ID_STS_Func},
-
-    { "MOVESTS", Move_STS_Func},
-    { "POSSTS", Get_Pos_STS_Func},
-    { "INITSTS", init_STS_Func},
-    { "SPEEDSTS", speed_STS_Func},
+    { "SCAN", Feetech_Scan_Func},
+    { "READ", Feetech_Read_Func},
+    { "WRITE", Feetech_Write_Func},
+    { "MOVE", Feetech_Move_Func},
+    { "POS", Feetech_Position_Func},
+    { "TORQUE", Feetech_Torque_Func},
+    { "SETID", Feetech_Set_Id_Func},
+    { "SETBAUD", Feetech_Set_Servo_Baud_Func},
+    { "BUSBAUD", Feetech_Set_Bus_Baud_Func},
 
     { "REBOOT", Reboot_Func},
     { "REBOOTUSB", Reboot_USB_Func},
@@ -30,12 +27,6 @@ const Command Command_List[] = {
 
     { "PRINTCMD", Print_All_CMD_Cmd},
     { "HELP", Print_All_CMD_Cmd},
-
-
-
-
-
-
 };
 
 const u16 Command_List_Length = sizeof (Command_List) / sizeof (Command_List[0]);
