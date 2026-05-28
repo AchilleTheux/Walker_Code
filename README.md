@@ -8,6 +8,7 @@ drives the previous AX level-shifter direction pin during transmission.
 ## Commands
 
 - `SCAN`: scan servo IDs.
+- `SCANBAUD`: scan servo IDs at each common Feetech baud rate.
 - `READ <id> <reg>`: read a Feetech register.
 - `WRITE <id> <reg> <value>`: write a Feetech register.
 - `MOVE <id> <position>`: write `STS_GOAL_POSITION`.
@@ -17,6 +18,10 @@ drives the previous AX level-shifter direction pin during transmission.
 - `SETBAUD <id> <baud_code>`: change the servo baud register and switch the
   bus to the matching speed.
 - `BUSBAUD <baud>`: change only the controller bus speed.
+- `IK <fx_mm> <fy_mm> [branch1] [branch2]`: solve the five-bar inverse
+  kinematics and print `ik,<t1_mrad>,<t2_mrad>,<pos11>,<pos12>`.
+- `FOOT <fx_mm> <fy_mm> [branch1] [branch2]`: solve inverse kinematics and
+  command Feetech ID `11` and ID `12`.
 - `HELP`: print available commands.
 
 Feetech baud codes:
@@ -29,3 +34,16 @@ Feetech baud codes:
 - `5`: 76800
 - `6`: 57600
 - `7`: 38400
+
+## Five-Bar Notes
+
+Feetech ID `11` is `theta1`, ID `12` is `theta2`, and `theta = 0` maps to
+servo position `2048`. Branch arguments are optional and default to `0`.
+With the geometry from `solver.py`, the straight-ahead zero-angle point is
+approximately:
+
+```text
+IK 230.83 -7.88 1 0
+```
+
+which should return positions close to `2048,2048`.

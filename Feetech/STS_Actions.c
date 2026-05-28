@@ -274,3 +274,30 @@ uint8_t Feetech_Scan_Func(void) {
     scan_start = 1;
     return 0;
 }
+
+uint8_t Feetech_Scan_Baud_Func(void) {
+    printf("scanbaud,start\n");
+
+    for (uint8_t baud_i = 0; baud_i < sizetab(feetech_baud_by_code); baud_i++) {
+        uint32_t baud = feetech_baud_by_code[baud_i];
+
+        STS_Uart_Half_Duplex_Set_Freq((float)baud);
+        sleep_ms(20);
+        printf("scanbaud,%lu\n", baud);
+
+        for (uint16_t id = 0; id < STS_BROADCAST; id++) {
+            uint16_t id_return = 0;
+            uint8_t done = STS_STATUS_PENDING;
+
+            Get_Feetech(id, STS_ID, &id_return, &done);
+            Wait_For_All_STS_Cmd();
+
+            if ((done == STS_STATUS_OK) && (id_return != 0)) {
+                printf("found,%lu,%u\n", baud, (unsigned)id_return);
+            }
+        }
+    }
+
+    printf("scanbaud,done\n");
+    return 0;
+}

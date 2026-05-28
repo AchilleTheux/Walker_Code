@@ -10,6 +10,7 @@ uint8_t Feetech_Set_Id_Func(void);
 uint8_t Feetech_Set_Servo_Baud_Func(void);
 uint8_t Feetech_Set_Bus_Baud_Func(void);
 uint8_t Feetech_Scan_Func(void);
+uint8_t Feetech_Scan_Baud_Func(void);
 
 void STS_Search_ID_Loop(void);
 

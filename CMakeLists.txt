@@ -46,6 +46,7 @@ Feetech/Registers_Feetech.c
 
 user.c
 Interpreteur.c
+Walker_Kinematics.c
 )
  
 # Feetech half-duplex UART PIO sources.
@@ -76,6 +77,7 @@ target_include_directories(walker PRIVATE
 target_link_libraries(walker
         pico_stdlib
         hardware_pio
+        m
         )
         
 set(PICO_32BIT 1)

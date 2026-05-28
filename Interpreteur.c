@@ -11,6 +11,7 @@ const Command Command_List[] = {
 
 
     { "SCAN", Feetech_Scan_Func},
+    { "SCANBAUD", Feetech_Scan_Baud_Func},
     { "READ", Feetech_Read_Func},
     { "WRITE", Feetech_Write_Func},
     { "MOVE", Feetech_Move_Func},
@@ -19,6 +20,8 @@ const Command Command_List[] = {
     { "SETID", Feetech_Set_Id_Func},
     { "SETBAUD", Feetech_Set_Servo_Baud_Func},
     { "BUSBAUD", Feetech_Set_Bus_Baud_Func},
+    { "IK", Walker_Ik_Func},
+    { "FOOT", Walker_Foot_Func},
 
     { "REBOOT", Reboot_Func},
     { "REBOOTUSB", Reboot_USB_Func},

@@ -37,6 +37,7 @@ typedef uint32_t u32;
 #include "Feetech/STS.h"
 #include "Feetech/STS_Actions.h"
 #include "Feetech/Registers_Feetech.h"
+#include "Walker_Kinematics.h"
 
 extern uint32_t Timer_ms1;
 
