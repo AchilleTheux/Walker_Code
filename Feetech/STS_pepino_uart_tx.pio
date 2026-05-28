@@ -9,16 +9,17 @@
 .side_set 1 opt
 
 ; An 8n1 UART transmit program.
-; OUT pin 0 and side-set pin 0 are both mapped to UART TX pin.
+; SET and OUT are mapped to DATA_PIN, SIDE is mapped to DIR_PIN.
 
-    pull       side 1      ; Assert stop bit, or stall with line in idle state
-    set pindirs, 1          ;
-    set x, 7   side 0 [7]  ; Preload bit counter, assert start bit for 8 clocks
+    pull            side 0 ; stall the line with LevelShifter in B=>A
+    set pindirs, 1  side 1 ; stall ended, activating IO + LevelShifter in A=>B
+    set x, 7               ; Preload bit counter
+    set pins, 0        [7] ; assert start bit for 8 clocks
 bitloop:                   ; This loop will run 8 times (8n1 UART)
     out pins, 1            ; Shift 1 bit from OSR to the first OUT pin
     jmp x-- bitloop   [6]  ; Each loop iteration is 8 cycles.
-    nop        side 1 [7]  ; 
-    set pindirs, 0          ;
+    set pins, 1       [7]  ; Stop Bit
+    set pindirs, 0         ; de-activating IO, LevelShifter will be reversed by next pull
 
 
 % c-sdk {

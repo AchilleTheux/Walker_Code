@@ -32,9 +32,6 @@ project(Formation_RP2040 C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
-
-add_custom_target(invalidate_files ALL
-                COMMAND ${CMAKE_COMMAND} -E touch "..\\user.c")
 				
 # Add executable. Default name is the project name, version 0.1
 
@@ -42,49 +39,16 @@ add_executable(Formation_RP2040
 
 main.c
 
-Gestion_Expander_IO.c
-Gestion_I2C.c
-
-Flash/Flash.c
-Flash/Log_File.c
-Flash/Hex_Decodeur.c
-Flash/Setup_File.c
-
-
 Feetech/STS_Uart_Half_Duplex.c
 Feetech/STS.c
 Feetech/STS_Actions.c
 Feetech/Registers_Feetech.c
 
-AX/AX_Uart_Half_Duplex.c
-AX/AX.c
-AX/AX_Actions.c
-AX/Registers_AX12.c
-
-RGB/Leds_RGB.c
-RGB/Leds_RGB_Anim.c
-
-Test_Funcs.c
 user.c
 Interpreteur.c
-
-action.c
-AU.c
-Actionneurs/pompe.c
-Actionneurs/bras.c
-Actionneurs/bras_instances.c
-Actionneurs/barillet.c
-Actionneurs/retourne.c
-Actionneurs/guide.c
-Actionneurs/bras_curseur.c
 )
  
-# ajout du programme PIO pour ws2812 ?
-pico_generate_pio_header(Formation_RP2040 ${CMAKE_CURRENT_LIST_DIR}/RGB/ws2812.pio)
-pico_generate_pio_header(Formation_RP2040 ${CMAKE_CURRENT_LIST_DIR}/AX/AX_pepino_uart_tx.pio)
-pico_generate_pio_header(Formation_RP2040 ${CMAKE_CURRENT_LIST_DIR}/AX/AX_uart_rx.pio)
-
-# Feetech module PIO sources (prefixes removed in Feetech directory)
+# Feetech half-duplex UART PIO sources.
 pico_generate_pio_header(Formation_RP2040 ${CMAKE_CURRENT_LIST_DIR}/Feetech/STS_pepino_uart_tx.pio)
 pico_generate_pio_header(Formation_RP2040 ${CMAKE_CURRENT_LIST_DIR}/Feetech/STS_uart_rx.pio)
 
@@ -112,10 +76,7 @@ target_include_directories(Formation_RP2040 PRIVATE
 target_link_libraries(Formation_RP2040 
         pico_stdlib
         hardware_pio
-        hardware_dma
-        hardware_i2c
         )
         
 set(PICO_32BIT 1)
 pico_add_extra_outputs(Formation_RP2040)
-

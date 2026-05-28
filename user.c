@@ -5,35 +5,9 @@ void Init_All(void) {
     // initialize all things    
 	stdio_init_all();
 
-    Flash_LogFile_Init();
-    Setup_File_Init();
-    Init_I2C();
-    //Expander_IO_Init();
-
-    //AU
-    init_AU();
-
-    // AX
-	AX_Uart_Half_Duplex_Init();
-    Init_Com_AX();
-
     // Feetech
     STS_Uart_Half_Duplex_Init();
     Init_Com_STS();
-
-    Pompe_Init();
-    Vanne_Init();
-
-    Bouton_Init();
-    //init_barillet();
-    Retourne_Init();
-    Action_init();
-    RGB_Init();
-
-    // Bras
-    Bras_Init(&bras1);
-    Bras_Init(&bras2);
-
 
     // "purge" du buffer USB RX ?
 	getchar_timeout_us(0);

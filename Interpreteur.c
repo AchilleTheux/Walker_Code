@@ -10,112 +10,18 @@ u16 i_Lecture_Current_Cmd = 0;
 const Command Command_List[] = {
 
 
-    { "TEST", Test_Func},
-    { "PING", Ping_Func},
-    { "TIMER", Timer_Func},
-    { "DEBUGEN", Debug_En_Func},
-    { "VITESSE", vitessse_RGB},
-
-    // LEDS
-
-    { "RGB", RGB_Func},
-
-    // fichier log
-    { "LOGRST", Flash_LogFile_RESET_Func},
-    { "LOGINIT", InitLog_Func},
-    { "LOGPRINT", printLog_Func},
-    { "LOGADD", Log_Add_Func},
-    { "LOGFILL", Log_Fill_Test_Func},
-
-    // fichier setup
-    { "SETUPERASE",  Setup_File_Erase_Func},
-    { "SETUPREAD",   Setup_File_Start_Read_Func},
-    { "SETUPRELOAD", Setup_File_Reload_Func},
-    { "SETUPADD",    Setup_File_Add_Func},
-
-
-    // AXSTS
-
-    { "AXBAUD", AX_Uart_Half_Duplex_Set_Freq_Func},
+    // Feetech bus on the former AX half-duplex pins.
+    { "BAUD", STS_Uart_Half_Duplex_Set_Freq_Func},
+    { "STSBAUD", STS_Uart_Half_Duplex_Set_Freq_Func},
+    { "AXBAUD", STS_Uart_Half_Duplex_Set_Freq_Func},
     { "WR", Send_STS_Func},
     { "RD", Get_STS_Func},
-    { "AXTESTID",Test_ID_AX_Func},
     { "STSTESTID",Test_ID_STS_Func},
-
-    { "MOVEAX", Move_AX_Func},
-    { "POSAX", Get_Pos_AX_Func},
-    { "INITAX", init_AX_Func},
-    { "SPEEDAX", speed_AX_Func},
 
     { "MOVESTS", Move_STS_Func},
     { "POSSTS", Get_Pos_STS_Func},
     { "INITSTS", init_STS_Func},
     { "SPEEDSTS", speed_STS_Func},
-
-    { "ENPOMPE", All_Pompe_ON},
-    { "ENVANNE", EN_Vanne_Func},
-
-    //Bras
-    {"INITBRAS", Bras_Demarrer_Init_All},
-    { "GRAB", action_attraper_cagette},
-    { "STORE", action_ranger_cagette},
-    { "GRABANDSTORE", action_attraper_et_ranger_cagette},
-    { "DROP", action_deposer_cagette},
-    { "FOLD", action_rentrer_bras},
-    {"FREEBRAS", Bras_Free_All},
-
-    //bras curseur
-    {"DOWN",action_descendre_bras_curseur},
-    {"UP",action_montee_bras_curseur},
-    {"INITCURSEUR",curseur_Init},
-    {"FREECURSEUR",curseur_free},
-
-    //Retourne cagete
-    {"RETOURNEN", retourne_n},
-    {"INITACTION", init_actionneurs_Func},
-
-    //sequence barillet
-    { "INITB", init_barillet},
-    { "TOURNE", action_tourne_barillet},
-    {"TOURNEABS" ,action_tourne_barillet_absolue},
-    { "FREEB", free_barillet},
-
-    { "RETOURNED",action_retourner_cagette_droite},
-    { "RETOURNEG",action_retourner_cagette_gauche},
-
-    { "I2CDISC", I2C_Discover_Cmd},
-
-
-    //guides pour aligner les cagettes
-
-    {"OPENBRASG",open_bras_gauche},
-    {"CLOSEBRASG" , close_bras_gauche},
-    {"OPENBRASD",open_bras_droite},
-    {"OPENBRASGM",open_bras_gauche_max},
-    {"OPENBRASDM",open_bras_droite_max},
-    {"CLOSEBRASD", close_bras_droite},
-    {"CLOSEBRAS" , close_bras},
-    {"OPENBRAS",open_bras},
-    {"OPENBRASM",open_bras_max},
-    {"INITGUIDE",init_guide},
-    {"FREEGUIDE", free_guide},
-
-    //AU
-    {"AU", trigger_Soft_AU},
-
-    // manual flash
-    { "FRD", FlashRd_Func},
-    { "FSRD", FlashRawSector_Rd_Func},
-    { "FWR", FlashWr_Func},
-    { "FER", FlashEr_Func},
-
-    // reprog
-    { "STARTHEXDEC", HEX_Decodeur_Start_Func},
-    { "STOPHEXDEC", HEX_Decodeur_Stop_Func},
-
-    //{ "FERASE", HEX_Decodeur_Erase_Func},
-    { "REPROG", HEX_Decodeur_Reprog_Func},
-
 
     { "REBOOT", Reboot_Func},
     { "REBOOTUSB", Reboot_USB_Func},
@@ -156,9 +62,6 @@ void Interp(char c) {
                 #ifndef WORLD_OF_SILENCE
                     printf("ERROR_Cmd_Length_Overshoot\r\n");
                 #endif
-            } else if (Current_Cmd[0] == ':') {
-                HEX_decodeur(&Current_Cmd[1]);
-
             } else {
 
                 // printf("Got %s\n", Current_Cmd);

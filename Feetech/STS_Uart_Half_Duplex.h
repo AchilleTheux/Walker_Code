@@ -4,12 +4,13 @@
 
 
 #define STS_UART_HALF_BUFF_LENGTH 20
-#define STS_UART_HALF_PIN 28
+#define STS_UART_HALF_PIN 21
 
 #define STS_UART_HALF_DEFAULT_BAUD 115200 //115200  
 
+#define STS_UART_DIR 27
 
-#define STS_PIO_UART_HALF pio0
+#define STS_PIO_UART_HALF pio1
 
 
 void STS_Uart_Half_Duplex_Init(void);

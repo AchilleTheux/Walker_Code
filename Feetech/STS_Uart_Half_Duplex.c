@@ -33,7 +33,9 @@ void STS_Uart_Half_Duplex_Init(void) {
     float div = (float)clock_get_hz(clk_sys) / (8 * STS_UART_HALF_DEFAULT_BAUD);
 
     pio_sm_set_consecutive_pindirs(STS_Pio_Uart_Half_Duplex, sm_rx, STS_UART_HALF_PIN, 1, false);
+    pio_sm_set_consecutive_pindirs(STS_Pio_Uart_Half_Duplex, sm_rx, STS_UART_DIR, 1, true);
     pio_gpio_init(STS_Pio_Uart_Half_Duplex, STS_UART_HALF_PIN);
+    pio_gpio_init(STS_Pio_Uart_Half_Duplex, STS_UART_DIR);
     gpio_pull_up(STS_UART_HALF_PIN);
 
     // pio_sm_set_pins_with_mask(pio0, sm_tx, 1u << PIO_FEETECH_PIN, 1u << PIO_FEETECH_PIN);
@@ -49,14 +51,12 @@ void STS_Uart_Half_Duplex_Init(void) {
     sm_config_set_jmp_pin(&c_rx, STS_UART_HALF_PIN); // for JMP
 
 
-    // We are mapping both OUT and side-set to the same pin, because sometimes
-    // we need to assert user data onto the pin (with OUT) and sometimes
-    // assert constant values (start/stop bit)
+    // OUT/SET drive the half-duplex data pin, side-set drives the level-shifter
+    // direction pin.
 
     sm_config_set_out_pins(&c_tx, STS_UART_HALF_PIN, 1);
-    sm_config_set_in_pins(&c_tx, STS_UART_HALF_PIN);
     sm_config_set_set_pins(&c_tx, STS_UART_HALF_PIN, 1);
-    sm_config_set_sideset_pins(&c_tx, STS_UART_HALF_PIN);
+    sm_config_set_sideset_pins(&c_tx, STS_UART_DIR);
 
 
     // Shift to right, autopush disabled
