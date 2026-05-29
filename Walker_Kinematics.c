@@ -9,6 +9,10 @@
 #define WALKER_BASE_HALF_MM 22.4f
 #define WALKER_CRANK_MM 88.0f
 #define WALKER_LINK_MM 108.0f
+#define WALKER_FOOT_EXTENSION_MM 38.0f
+
+#define WALKER_EXTENSION_THETA1 1
+#define WALKER_EXTENSION_THETA2 2
 
 typedef struct {
     float t1;
@@ -16,6 +20,8 @@ typedef struct {
     uint16_t pos1;
     uint16_t pos2;
 } WalkerIkSolution;
+
+static uint8_t walker_extension_side = WALKER_EXTENSION_THETA2;
 
 static float normalize_angle(float theta) {
     const float pi = 3.14159265358979323846f;
@@ -61,20 +67,27 @@ static uint8_t theta_to_feetech_pos(float theta, uint16_t *pos) {
     return 0;
 }
 
-static uint8_t walker_solve_ik(float fx, float fy, uint8_t branch1, uint8_t branch2, WalkerIkSolution *sol) {
+static uint8_t walker_solve_ik_theta1_extension(float fx, float fy, uint8_t branch1, uint8_t branch2, WalkerIkSolution *sol) {
     uint8_t err;
 
-    float a1 = -4400.0f * fx;
-    float b1 = 98560.0f - (4400.0f * fy);
-    float c1 = (25.0f * fx * fx) + (25.0f * fy * fy) - (1120.0f * fy) - 326756.0f;
+    float extended_link = WALKER_LINK_MM + WALKER_FOOT_EXTENSION_MM;
+    float a1 = -2.0f * WALKER_CRANK_MM * fx;
+    float b1 = -2.0f * WALKER_CRANK_MM * (fy - WALKER_BASE_HALF_MM);
+    float c1 = (fx * fx) +
+               ((fy - WALKER_BASE_HALF_MM) * (fy - WALKER_BASE_HALF_MM)) +
+               (WALKER_CRANK_MM * WALKER_CRANK_MM) -
+               (extended_link * extended_link);
 
     err = solve_angle(a1, b1, c1, branch1, &sol->t1);
     if (err) {
         return err;
     }
 
-    float px = ((54.0f * fx) / 73.0f) + ((1672.0f * cosf(sol->t1)) / 73.0f);
-    float py = ((54.0f * fy) / 73.0f) + ((1672.0f * sinf(sol->t1)) / 73.0f) + (2128.0f / 365.0f);
+    float px = ((WALKER_LINK_MM * fx) + (WALKER_FOOT_EXTENSION_MM * WALKER_CRANK_MM * cosf(sol->t1))) /
+               extended_link;
+    float py = ((WALKER_LINK_MM * fy) +
+                (WALKER_FOOT_EXTENSION_MM * (WALKER_BASE_HALF_MM + (WALKER_CRANK_MM * sinf(sol->t1))))) /
+               extended_link;
     float dy = py + WALKER_BASE_HALF_MM;
 
     float a2 = -2.0f * WALKER_CRANK_MM * px;
@@ -94,11 +107,60 @@ static uint8_t walker_solve_ik(float fx, float fy, uint8_t branch1, uint8_t bran
     return theta_to_feetech_pos(sol->t2, &sol->pos2);
 }
 
+static uint8_t walker_solve_ik_theta2_extension(float fx, float fy, uint8_t branch1, uint8_t branch2, WalkerIkSolution *sol) {
+    uint8_t err;
+    float extended_link = WALKER_LINK_MM + WALKER_FOOT_EXTENSION_MM;
+
+    float a2 = -2.0f * WALKER_CRANK_MM * fx;
+    float b2 = -2.0f * WALKER_CRANK_MM * (fy + WALKER_BASE_HALF_MM);
+    float c2 = (fx * fx) +
+               ((fy + WALKER_BASE_HALF_MM) * (fy + WALKER_BASE_HALF_MM)) +
+               (WALKER_CRANK_MM * WALKER_CRANK_MM) -
+               (extended_link * extended_link);
+
+    err = solve_angle(a2, b2, c2, branch2, &sol->t2);
+    if (err) {
+        return err;
+    }
+
+    float px = ((WALKER_LINK_MM * fx) + (WALKER_FOOT_EXTENSION_MM * WALKER_CRANK_MM * cosf(sol->t2))) /
+               extended_link;
+    float py = ((WALKER_LINK_MM * fy) +
+                (WALKER_FOOT_EXTENSION_MM * (-WALKER_BASE_HALF_MM + (WALKER_CRANK_MM * sinf(sol->t2))))) /
+               extended_link;
+    float cy = py - WALKER_BASE_HALF_MM;
+
+    float a1 = -2.0f * WALKER_CRANK_MM * px;
+    float b1 = -2.0f * WALKER_CRANK_MM * cy;
+    float c1 = (px * px) + (cy * cy) + (WALKER_CRANK_MM * WALKER_CRANK_MM) - (WALKER_LINK_MM * WALKER_LINK_MM);
+
+    err = solve_angle(a1, b1, c1, branch1, &sol->t1);
+    if (err) {
+        return err;
+    }
+
+    err = theta_to_feetech_pos(sol->t1, &sol->pos1);
+    if (err) {
+        return err;
+    }
+
+    return theta_to_feetech_pos(sol->t2, &sol->pos2);
+}
+
+static uint8_t walker_solve_ik(float fx, float fy, uint8_t branch1, uint8_t branch2, WalkerIkSolution *sol) {
+    if (walker_extension_side == WALKER_EXTENSION_THETA1) {
+        return walker_solve_ik_theta1_extension(fx, fy, branch1, branch2, sol);
+    }
+
+    return walker_solve_ik_theta2_extension(fx, fy, branch1, branch2, sol);
+}
+
 static void print_ik_solution(const WalkerIkSolution *sol) {
     int32_t t1_mrad = (int32_t)((sol->t1 * 1000.0f) + (sol->t1 >= 0.0f ? 0.5f : -0.5f));
     int32_t t2_mrad = (int32_t)((sol->t2 * 1000.0f) + (sol->t2 >= 0.0f ? 0.5f : -0.5f));
 
-    printf("ik,%ld,%ld,%u,%u\n",
+    printf("ik,%u,%ld,%ld,%u,%u\n",
+           (unsigned)walker_extension_side,
            t1_mrad,
            t2_mrad,
            (unsigned)sol->pos1,
@@ -177,5 +239,22 @@ uint8_t Walker_Foot_Func(void) {
     }
 
     print_ik_solution(&sol);
+    return 0;
+}
+
+uint8_t Walker_Extension_Side_Func(void) {
+    u32 side;
+
+    if (Get_Param_u32(&side)) {
+        printf("extside,%u\n", (unsigned)walker_extension_side);
+        return 0;
+    }
+
+    if ((side != WALKER_EXTENSION_THETA1) && (side != WALKER_EXTENSION_THETA2)) {
+        return PARAM_OUT_OF_RANGE_ERROR_CODE;
+    }
+
+    walker_extension_side = side;
+    printf("extside,%u\n", (unsigned)walker_extension_side);
     return 0;
 }

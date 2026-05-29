@@ -20,6 +20,7 @@ const Command Command_List[] = {
     { "SETID", Feetech_Set_Id_Func},
     { "SETBAUD", Feetech_Set_Servo_Baud_Func},
     { "BUSBAUD", Feetech_Set_Bus_Baud_Func},
+    { "EXTSIDE", Walker_Extension_Side_Func},
     { "IK", Walker_Ik_Func},
     { "FOOT", Walker_Foot_Func},
 

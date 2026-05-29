@@ -18,8 +18,10 @@ drives the previous AX level-shifter direction pin during transmission.
 - `SETBAUD <id> <baud_code>`: change the servo baud register and switch the
   bus to the matching speed.
 - `BUSBAUD <baud>`: change only the controller bus speed.
+- `EXTSIDE [1|2]`: get or set which motor-side link carries the 38 mm foot
+  extension. `1` means `theta1`, `2` means `theta2`; default is `2`.
 - `IK <fx_mm> <fy_mm> [branch1] [branch2]`: solve the five-bar inverse
-  kinematics and print `ik,<t1_mrad>,<t2_mrad>,<pos11>,<pos12>`.
+  kinematics and print `ik,<ext_side>,<t1_mrad>,<t2_mrad>,<pos11>,<pos12>`.
 - `FOOT <fx_mm> <fy_mm> [branch1] [branch2]`: solve inverse kinematics and
   command Feetech ID `11` and ID `12`.
 - `HELP`: print available commands.
@@ -39,11 +41,12 @@ Feetech baud codes:
 
 Feetech ID `11` is `theta1`, ID `12` is `theta2`, and `theta = 0` maps to
 servo position `2048`. Branch arguments are optional and default to `0`.
-With the geometry from `solver.py`, the straight-ahead zero-angle point is
+With the extension on the `theta2` link, the straight-ahead zero-angle point is
 approximately:
 
 ```text
-IK 230.83 -7.88 1 0
+EXTSIDE 2
+IK 230.83 7.88 1 0
 ```
 
 which should return positions close to `2048,2048`.
